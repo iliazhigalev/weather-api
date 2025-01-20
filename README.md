@@ -24,92 +24,119 @@ python script.py
 **Метод 1**: Регистрация пользователя (/register_user)  
 Тип запроса: POST  
 Описание: Регистрирует нового пользователя.  
-URL: http://127.0.0.1:8000/register_user
-Тело запроса (JSON):, к примеру:  
-{
-  "username": "testuser"
+URL: http://127.0.0.1:8000/users/register_user  
+Тело запроса (JSON):, к примеру: 
+```json
+{  
+  "username": "testuser"  
 }  
+```
 Ответ:
-{
-    "user_id": 1
+```json
+{  
+    "username": "testuser",  
+    "id": 1,  
+    "cities": null  
 }
-
+```
 **Метод 2**: Получение текущей погоды по координатам (/weather)  
-Метод: GET /weather  
+Метод: GET /weather/weather  
 Тип запроса: GET  
 Описание: Возвращает текущую погоду для указанных координат.  
-URL: http://127.0.0.1:8000/weather  
 Параметры:  
     - latitude (например, 55.7558 для Москвы)  
     - longitude (например, 37.6176 для Москвы)  
 
-Полный запрос может выглядеть так `http://127.0.0.1:8000/weather/?latitude=52.52&longitude=13.41`  
+Полный запрос может выглядеть так `http://127.0.0.1:8000/weather/weather/?latitude=52.52&longitude=13.41`  
 Ответ:
-{
-    "temperature": 3.0,
-    "wind_speed": 10.6,
-    "atmospheric_pressure": 1037.7
+```json
+{  
+    "temperature": 2.2,  
+    "wind_speed": 5.8,  
+    "atmospheric_pressure": 1018.9  
 }
-
+```
 **Метод 3**: Добавление города для отслеживания (/track_city)  
 Метод: POST /track_city  
-Описание: Добавляет город для отслеживания погоды и сохраняет текущие данные о погоде.    
-URL: http://127.0.0.1:8000/track_city  
+Описание: Добавляет город для отслеживания погоды и сохраняет текущие данные о погоде.  
+Полный запрос может выглядеть так `http://127.0.0.1:8000/cities/track_city`   
 Тело запроса (JSON):
-{
-  "user_id": 1,
-  "name": "Moscow",
-  "latitude": 52.52,
-  "longitude": 13.41
+```json
+{  
+  "user_id": 1,  
+  "name": "Moscow",  
+  "latitude": 52.52,  
+  "longitude": 13.41  
 }  
-Ответ:
+```
+
+Ответ:  
+```json
 {
-    "message": "Added a city Moscow for the user 1 and updated the weather forecast."
+    "id": 1,   
+    "name": "Moscow",  
+    "latitude": 52.52,  
+    "longitude": 13.41,  
+    "forecast": {  
+        "city_id": 1,  
+        "timestamp": "2025-01-20T14:05:56.069950",  
+        "temperature": 2.4,  
+        "wind_speed": 5.8,  
+        "atmospheric_pressure": 1018.4
+    }  
 }  
+```
+, где id - уникальный идентификат города в бд  
 
 **Метод 4**: Получение списка городов пользователя (/list_user_cities)  
-Метод: GET /list_user_cities    
-URL: http://127.0.0.1:8000/list_user_cities?user_id=1  
+Метод: GET /cities/list_user_cities    
+URL: http://127.0.0.1:8000/cities/list_user_cities?user_id=1   
 Описание: Возвращает список городов, которые отслеживает пользователь.    
 Параметры:  
 В Query Params добавьте: user_id (например, 1)  
-Ответ:  
-{
-    "user_id": 1,
-    "cities": [
-        {
-            "id": 1,
-            "name": "Moscow",
-            "latitude": 52.52,
-            "longitude": 13.41,
-            "forecast": {
-                "city_id": 1,
-                "timestamp": "2025-01-19T12:54:53.714454",
-                "temperature": 3.2,
-                "wind_speed": 11.8,
-                "atmospheric_pressure": 1037.3
-            }
-        }
-    ]
-}
+Ответ:
+```json
+{  
+    "user_id": 1,  
+    "cities": [  
+        {  
+            "id": 1,  
+            "name": "Moscow",  
+            "latitude": 52.52,  
+            "longitude": 13.41,  
+            "forecast": {  
+                "city_id": 1,  
+                "timestamp": "2025-01-19T12:54:53.714454",  
+                "temperature": 3.2,  
+                "wind_speed": 11.8,  
+                "atmospheric_pressure": 1037.3  
+            }  
+        }  
+    ]  
+}  
+```
 
 Метод 5: Получение погоды на указанное время (/get_weather_at_time)  
 В методе get_weather_at_time вводите время в таком формате 15:46, минуты будут откидываться и мы будем искать вхождение именно даты и часов, потому что open-meteo возвращает данные о погоде каждый час.  
-Метод: POST /get_weather_at_time   
-URL: http://127.0.0.1:8000/get_weather_at_time    
+GET /weather/get_weather_at_time  
+URL: http://127.0.0.1:8000/weather/get_weather_at_time    
 Описание: Возвращает прогноз погоды для города на текущий день в указанное время.  
 Тело запроса (JSON):  
+```json
 {
   "user_id": 1,
   "city_name": "Moscow",
   "time": "12:00",
   "params": ["temperature", "humidity"]
 }   
+```
 Ответ:
+```json
 {
     "temperature": 3.5,
     "humidity": 87
 }
+```
 
 Дополнительные задания
 1. Работа с несколькими пользователями
